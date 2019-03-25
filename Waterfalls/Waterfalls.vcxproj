@@ -134,6 +134,8 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="feedback.gs" />
+    <None Include="feedback.vs" />
     <None Include="marchingCubes.fs" />
     <None Include="marchingCubes.gs" />
     <None Include="marchingCubes.vs" />

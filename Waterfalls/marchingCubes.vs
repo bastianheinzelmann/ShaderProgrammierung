@@ -1,9 +1,9 @@
-#version 330 core
-layout (location = 0) in vec2 aUV;
+#version 150 core
+in vec2 aUV;
 
-//in int gl_InstanceID;
+in int gl_InstanceID;
 
-out VS_OUT
+out struct VS_OUT
 {
 	vec3 wsCoord;
 	vec3 uvw;

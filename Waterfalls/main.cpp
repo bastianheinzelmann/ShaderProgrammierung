@@ -76,10 +76,11 @@ int main()
 
 	// build and compile our shader zprogram
 	// ------------------------------------
-	Shader ourShader("shader.vs", "shader.fs");
+	//Shader ourShader("shader.vs", "Shader.fs");
 	Shader noiseShader("noiseShader.vs", "noiseShader.fs");
 	Shader screenShader("screenShader.vs", "screenShader.fs");
-	Shader marchingCubesShader("marchingCubes.vs", "marchingCubes.fs", "marchingCubes.gs");
+	Shader marchingCubesShader("marchingCubes.vs", "Shader.fs", "marchingCubes.gs");
+	Shader feedbackShader("feedback.vs", "Shader.fs", "feedback.gs");
 
 	// uv coordinates
 	float uvCoordinates[3 * 96 * 96];
@@ -251,10 +252,10 @@ int main()
 
 
 	// feedback buffer
-	unsigned int tbo;
-	glGenBuffers(1, &tbo);
-	glBindBuffer(GL_ARRAY_BUFFER, tbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data) * 15, nullptr, GL_STATIC_READ);
+	//unsigned int tbo;
+	//glGenBuffers(1, &tbo);
+	//glBindBuffer(GL_ARRAY_BUFFER, tbo);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(data) * 15, nullptr, GL_STATIC_READ);
 
 	// framebuffer stuff
 	unsigned int framebuffer;
@@ -304,16 +305,45 @@ int main()
 	}
 
 	// transform feedback
-	marchingCubesShader.use();
-	glBindVertexArray(uvVAO);
+	feedbackShader.use();
+
+	// Create VAO
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	// Create input VBO and vertex format
+	GLfloat data2[] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f };
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(data2), data2, GL_STATIC_DRAW);
+
+	GLint inputAttrib = glGetAttribLocation(feedbackShader.ID, "inValue");
+	glEnableVertexAttribArray(inputAttrib);
+	glVertexAttribPointer(inputAttrib, 1, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Create transform feedback buffer
+	GLuint tbo;
+	glGenBuffers(1, &tbo);
+	glBindBuffer(GL_ARRAY_BUFFER, tbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(data2) * 3, nullptr, GL_STATIC_READ);
+
+	// Perform feedback transform
 	glEnable(GL_RASTERIZER_DISCARD);
+
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, tbo);
+
 	glBeginTransformFeedback(GL_TRIANGLES);
 	glDrawArrays(GL_POINTS, 0, 5);
 	glEndTransformFeedback();
+
 	glDisable(GL_RASTERIZER_DISCARD);
+
 	glFlush();
 
+	// Fetch and print results
 	GLfloat feedback[15];
 	glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, sizeof(feedback), feedback);
 
@@ -321,6 +351,28 @@ int main()
 	{
 		printf("%f\n", feedback[i]);
 	}
+	glDeleteBuffers(1, &tbo);
+	glDeleteBuffers(1, &vbo);
+
+	glDeleteVertexArrays(1, &vao);
+
+	//marchingCubesShader.use();
+	//glBindVertexArray(uvVAO);
+	//glEnable(GL_RASTERIZER_DISCARD);
+	//glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, tbo);
+	//glBeginTransformFeedback(GL_TRIANGLES);
+	//glDrawArrays(GL_POINTS, 0, 5);
+	//glEndTransformFeedback();
+	//glDisable(GL_RASTERIZER_DISCARD);
+	//glFlush();
+
+	//GLfloat feedback[15];
+	//glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, sizeof(feedback), feedback);
+
+	//for (int i = 0; i < 15; i++)
+	//{
+	//	printf("%f\n", feedback[i]);
+	//}
 
 	// transform feedback
 
