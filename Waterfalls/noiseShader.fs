@@ -2,7 +2,7 @@
 out float FragColor;
 
 in vec2 TexCoords;
-uniform uint layer;
+uniform int layer;
 
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
@@ -110,7 +110,10 @@ vec2 pillar1 = vec2(0.5f, 0.5f);
 
 void main()
 {
-    float col = cnoise(vec3(TexCoords.x, TexCoords.y, layer));
+	float normalizedLayer = (layer / 255.0 * 2.0) - 1.0;
+    float col = cnoise(vec3(TexCoords.x, TexCoords.y, normalizedLayer));
     FragColor = col;
-	FragColor = FragColor + 0.5f / length(TexCoords.xy - pillar1.xy)- 2.0f;
+	FragColor = FragColor + (0.5f / length(TexCoords.xy - pillar1.xy)- 2.0f);
+	//FragColor = FragColor + dot(vec2(cos(TexCoords.y), sin(TexCoords.y)), vec2(TexCoords.x, layer));
+	//FragColor = layer / 255.0;
 } 
