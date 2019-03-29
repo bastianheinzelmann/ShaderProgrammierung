@@ -1,10 +1,10 @@
-#version 150 core
+#version 410 core
 layout (points) in;
-layout (max_vertices = 15) out;
+layout (triangle_strip, max_vertices = 15) out;
 
 in struct VS_OUT
 {
-	vec3 wsCoord;
+	vec4 wsCoord;
 	vec3 uvw;
 	vec4 f0123;
 	vec4 f4567;

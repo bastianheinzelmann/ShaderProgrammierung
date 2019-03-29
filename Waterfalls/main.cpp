@@ -79,7 +79,7 @@ int main()
 	//Shader ourShader("shader.vs", "Shader.fs");
 	Shader noiseShader("noiseShader.vs", "noiseShader.fs");
 	Shader screenShader("screenShader.vs", "screenShader.fs");
-	Shader marchingCubesShader("marchingCubes.vs", "Shader.fs", "marchingCubes.gs");
+	Shader marchingCubesShader("marchingCubes.vert", "Shader.fs", "marchingCubes.geom");
 	Shader feedbackShader("feedback.vs", "Shader.fs", "feedback.gs");
 
 	// uv coordinates
